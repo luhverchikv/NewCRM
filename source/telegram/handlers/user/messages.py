@@ -1,7 +1,6 @@
-from aiogram import F
-from aiogram import Router
+from aiogram import F, Router
 from aiogram.filters import StateFilter
-from aiogram.types import Message, Location
+from aiogram.types import Message
 from dishka import FromDishka
 from dishka.integrations.aiogram import inject as aiogram_inject
 
@@ -14,15 +13,14 @@ user_messages_router = Router(name=__name__)
 @user_messages_router.message(F.location)
 @aiogram_inject
 async def handle_location(
-    message: Message,
-    location: Location,
+    message: Message,  # <-- location получаем из message.location
     user_service: FromDishka[UserService],
     i18n: FromDishka[I18n],
 ) -> None:
     """Обработка полученной геолокации."""
     user_id = message.from_user.id
-    lat = location.latitude
-    lon = location.longitude
+    lat = message.location.latitude      # <-- так достаём широту
+    lon = message.location.longitude     # <-- так достаём долготу
 
     # Сохраняем в БД (опционально)
     await user_service.update_location(user_id, lat, lon)
