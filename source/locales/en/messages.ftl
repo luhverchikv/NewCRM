@@ -15,3 +15,10 @@ dialog-welcome = This is a demo dialog
 dialog-next = Next
 dialog-second = This is the second window
 dialog-close = Close
+location_request = Press the button below to send your location:
+location_received =
+    📍 Your location:
+    Latitude: { $lat }
+    Longitude: { $lon }
+    🔗 { $maps_url }
+
