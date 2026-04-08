@@ -23,7 +23,7 @@ async def handle_location(
     lon = message.location.longitude     # <-- так достаём долготу
 
     # Сохраняем в БД (опционально)
-    await user_service.update_location(user_id, lat, lon)
+    #await user_service.update_location(user_id, lat, lon)
 
     # Формируем Google Maps ссылку
     maps_url = f"https://www.google.com/maps?q={lat},{lon}"
