@@ -98,3 +98,12 @@ class UserService(BaseService[UserOrm]):
         async with self._uow:
             users = await self._uow.users.list_by_filters(**filters)
             return users
+            
+    async def update_location(self, user_id: int, lat: float, lon: float) -> None:
+        """Обновить геолокацию пользователя."""
+        user = await self.get_user(user_id)
+        if user:
+            user.latitude = lat
+            user.longitude = lon
+            await self.session.commit()
+
