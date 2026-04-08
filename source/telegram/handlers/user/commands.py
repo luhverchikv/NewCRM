@@ -10,7 +10,7 @@ from dishka import FromDishka
 from dishka.integrations.aiogram import inject as aiogram_inject
 
 from source.services import UserService
-from source.telegram.keyboards import inline_language_kb
+from source.telegram.keyboards import inline_language_kb, get_location_kb
 from source.telegram.states import DialogSG
 from source.telegram.states import FormSG
 from source.utils import I18n
@@ -58,3 +58,22 @@ async def start_form(
 ) -> None:
     await state.set_state(FormSG.name)
     await message.answer(await i18n(message.from_user.id, "fsm-enter-name"))
+
+
+@user_commands_router.message(Command("location"))
+@aiogram_inject
+async def location_command(
+    message: Message,
+    i18n: FromDishka[I18n],
+) -> None:
+    """Команда для запроса геолокации пользователя."""
+    user = message.from_user
+    
+    # Определяем локаль пользователя (по умолчанию RU)
+    user_locale = "ru"  # Можно получить из БД или настроек
+    
+    text = await i18n(user.id, "location_request")
+    keyboard = await get_location_kb(locale=user_locale)
+    
+    await message.answer(text=text, reply_markup=keyboard)
+    
