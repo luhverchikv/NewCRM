@@ -15,3 +15,10 @@ dialog-welcome = Это демонстрационный диалог
 dialog-next = Далее
 dialog-second = Это второе окно
 dialog-close = Закрыть
+location_request = Нажмите кнопку ниже, чтобы отправить ваше местоположение:
+location_received =
+    📍 Ваше местоположение:
+    Широта: { $lat }
+    Долгота: { $lon }
+    🔗 { $maps_url }
+
