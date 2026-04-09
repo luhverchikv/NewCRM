@@ -21,4 +21,5 @@ location_received =
     Широта: { $lat }
     Долгота: { $lon }
     🔗 { $maps_url }
-
+mini_app_welcome = 🚀 Нажмите на кнопку ниже, чтобы открыть Mini App и увидеть ваш профиль!
+menu_welcome = 📋 Используйте кнопку ниже для быстрого доступа к Mini App:
