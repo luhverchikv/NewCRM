@@ -1,150 +1,112 @@
 # source/api/mini_app.py
+"""
+Mini App API — упрощённая версия (без БД)
+Можно расширять постепенно:
+1. ✅ Сейчас: эхо-ответ + проверка авторизации
+2. 🔄 Позже: кеш в Redis
+3. 🔄 Позже: запись в БД
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, status, Header
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional, Any
-
-from source.database.core import DatabaseSession, get_db_session
-from source.database.models.base import BaseRecord
-from source.enums.roles import UserRole
-from aiogram.utils.web_app import check_webapp_signature
 
 router = APIRouter(prefix="/api/mini-app", tags=["mini-app"])
 
 
-# === DTO ===
-class MiniAppDataCreate(BaseModel):
-    user_id: str = Field(..., min_length=1, description="Telegram ID пользователя")
-    data: dict[str, Any] = Field(..., description="Данные от mini-app")
-    source: Optional[str] = Field(default="web", description="Источник: web/telegram")
-    
-    @validator('user_id')
-    def user_id_must_be_numeric(cls, v):
-        if not v.isdigit():
-            raise ValueError('user_id должен быть числом (Telegram ID)')
-        return v
+# === Простые DTO ===
+class MiniAppEchoRequest(BaseModel):
+    message: str = Field(default="Hello", max_length=500)
+    meta: Optional[dict[str, Any]] = Field(default=None)
 
 
-class MiniAppDataResponse(BaseModel):
-    id: int
-    user_id: str
-    created_at: datetime
-    status: str = "saved"
-    
-    class Config:
-        from_attributes = True
+class MiniAppEchoResponse(BaseModel):
+    ok: bool
+    timestamp: datetime
+    echo: str
+    user_id: Optional[str] = None
+    received_meta: Optional[dict[str, Any]] = None
 
 
-# === Авторизация ===
-# source/api/mini_app.py
-from fastapi import Header, HTTPException, status
-
-async def verify_mini_app_request(
+# === Простая авторизация (только API Key для начала) ===
+async def verify_api_key_simple(
     x_api_key: str | None = Header(default=None),
-    x_telegram_init_data: str | None = Header(default=None),
-) -> dict:
-    from source.config.config_reader import settings  # ← Импорт глобального settings
+) -> str:
+    """Проверка по простому API-ключу"""
+    from source.config.config_reader import settings
     
-    # 1. Проверка API Key (если настроен)
     config_key = settings.tg.mini_app_api_key.get_secret_value()
     
-    if config_key and x_api_key == config_key:
-        return {"auth_method": "api_key"}
+    # Если ключ не настроен — разрешаем все запросы (только для разработки!)
+    if not config_key:
+        return "dev-mode"
     
-    # 2. Если ключ не настроен — разрешаем только Telegram initData
-    if not config_key and not x_telegram_init_data:
+    if not x_api_key or x_api_key != config_key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="API key not configured. Use Telegram initData for auth."
+            detail="Invalid API key"
         )
     
-    # 3. Проверка Telegram initData (безопасный способ)
-    if x_telegram_init_data:
-        try:
-            bot_token = settings.tg.bot_token.get_secret_value()
-            from aiogram.utils.web_app import check_webapp_signature
-            
-            if check_webapp_signature(bot_token, x_telegram_init_data):
-                from aiogram.utils.web_app import parse_webapp_init_data
-                user_data = parse_webapp_init_data(x_telegram_init_data)
-                return {
-                    "auth_method": "telegram",
-                    "user": user_data.user,
-                    "user_id": str(user_data.user.id)
-                }
-        except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=f"Invalid Telegram initData: {str(e)}"
-            )
-    
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Missing or invalid authentication"
-    )
-
+    return "authorized"
 
 
 # === Эндпоинты ===
 
-@router.post("/save", response_model=MiniAppDataResponse, status_code=201)
-async def save_mini_app_data(
-    payload: MiniAppDataCreate,
-    auth: dict = Depends(verify_mini_app_request),
-    db: DatabaseSession = Depends(get_db_session)
-):
-    """Сохранить данные из mini-app в общую БД"""
-    
-    # Используем user_id из Telegram initData, если доступен (безопаснее)
-    user_id = auth.get("user_id", payload.user_id)
-    
-    # Создаём запись
-    record = BaseRecord(
-        user_id=user_id,
-        data=payload.data,
-        source=payload.source,
-        created_at=datetime.utcnow()
-    )
-    
-    db.add(record)
-    await db.commit()
-    await db.refresh(record)
-    
-    return MiniAppDataResponse.model_validate(record)
+@router.get("/ping", tags=["health"])
+async def ping():
+    """Проверка доступности API"""
+    return {
+        "ok": True,
+        "service": "mini-app-api",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "0.1.0"
+    }
 
 
-@router.get("/history/{user_id}", response_model=list[MiniAppDataResponse])
-async def get_user_history(
-    user_id: str,
-    auth: dict = Depends(verify_mini_app_request),
-    db: DatabaseSession = Depends(get_db_session),
-    limit: int = Query(50, ge=1, le=200)
+@router.post("/echo", response_model=MiniAppEchoResponse)
+async def echo_message(
+    payload: MiniAppEchoRequest,
+    auth: str = Depends(verify_api_key_simple),
+    x_telegram_user_id: str | None = Header(default=None),
 ):
-    """Получить историю записей пользователя"""
+    """
+    Простой эхо-эндпоинт для тестирования связи.
     
-    # Проверка: пользователь может видеть только свои данные
-    # (или админ может видеть все)
-    auth_user_id = auth.get("user_id")
-    if auth_user_id and auth_user_id != user_id:
-        # Проверяем, админ ли это (нужна ваша логика)
-        # if not await is_admin(auth_user_id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied"
-        )
-    
-    from sqlalchemy import select
-    from source.database.models.base import BaseRecord
-    
-    records = await db.execute(
-        select(BaseRecord)
-        .where(BaseRecord.user_id == user_id)
-        .order_by(BaseRecord.created_at.desc())
-        .limit(limit)
+    В будущем здесь будет:
+    - валидация данных
+    - запись в Redis/БД
+    - бизнес-логика
+    """
+    return MiniAppEchoResponse(
+        ok=True,
+        timestamp=datetime.utcnow(),
+        echo=payload.message,
+        user_id=x_telegram_user_id,  # Можно передавать из фронтенда
+        received_meta=payload.meta
     )
+
+
+@router.post("/save", response_model=MiniAppEchoResponse)
+async def save_placeholder(
+    payload: MiniAppEchoRequest,
+    auth: str = Depends(verify_api_key_simple),
+):
+    """
+    Заглушка для будущего эндпоинта сохранения.
     
-    return [
-        MiniAppDataResponse.model_validate(r)
-        for r in records.scalars().all()
-    ]
+    Сейчас просто возвращает подтверждение.
+    В будущем: запись в базу данных.
+    """
+    # 🔄 Здесь позже добавим:
+    # 1. Валидацию payload
+    # 2. Запись в Redis (кеширование)
+    # 3. Запись в PostgreSQL (постоянное хранение)
+    
+    return MiniAppEchoResponse(
+        ok=True,
+        timestamp=datetime.utcnow(),
+        echo=f"[SAVED] {payload.message}",
+        received_meta=payload.meta
+    )
 
