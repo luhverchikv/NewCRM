@@ -3,7 +3,7 @@ from aiogram.types.web_app_info import WebAppInfo
 
 
 # URL вашего Mini App
-MINI_APP_URL = "https://u8fqhj0l960p.space.minimax.io"
+MINI_APP_URL = "https://luhverchikv.github.io/mini_app"
 
 
 def get_webapp_inline_kb() -> InlineKeyboardMarkup:
