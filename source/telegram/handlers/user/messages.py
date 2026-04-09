@@ -38,6 +38,6 @@ async def handle_location(
     await message.answer(text)
 
 
-@user_messages_router.message(F.text, StateFilter(None))
-async def echo(message: Message) -> None:
-    await message.answer(message.text)
+#@user_messages_router.message(F.text, StateFilter(None))
+#async def echo(message: Message) -> None:
+#    await message.answer(message.text)
