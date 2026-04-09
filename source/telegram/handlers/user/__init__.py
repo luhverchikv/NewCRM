@@ -13,5 +13,6 @@ def setup_user_routers() -> Router:
         user_commands_router,
         user_messages_router,
         user_fsm_router,
+        webapp_router,
     )
     return router
