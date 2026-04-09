@@ -21,4 +21,5 @@ location_received =
     Latitude: { $lat }
     Longitude: { $lon }
     🔗 { $maps_url }
-
+mini_app_welcome = 🚀 Click the button below to open Mini App and see your profile!
+menu_welcome = 📋 Use the button below for quick access to Mini App:
