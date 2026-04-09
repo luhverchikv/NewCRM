@@ -14,7 +14,7 @@ webapp_router = Router(name=__name__)
 @aiogram_inject
 async def open_mini_app(
     message: Message,
-    i18n: I18n,
+    i18n: FromDishka[I18n],
 ) -> None:
     """Команда для открытия Mini App."""
     user_id = message.from_user.id
@@ -30,7 +30,7 @@ async def open_mini_app(
 @aiogram_inject
 async def show_menu(
     message: Message,
-    i18n: I18n,
+    i18n: FromDishka[I18n],
 ) -> None:
     """Команда для отображения меню с Reply клавиатурой."""
     user_id = message.from_user.id
