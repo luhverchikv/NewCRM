@@ -4,6 +4,7 @@ from .callbacks import user_callbacks_router
 from .commands import user_commands_router
 from .fsm import user_fsm_router
 from .messages import user_messages_router
+from .webapp import webapp_router
 
 
 def setup_user_routers() -> Router:
