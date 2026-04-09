@@ -2,6 +2,7 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 from dishka.integrations.aiogram import inject as aiogram_inject
+from dishka import FromDishka
 
 from source.telegram.keyboards import get_webapp_inline_kb, get_webapp_reply_kb
 from source.utils import I18n
