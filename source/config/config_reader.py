@@ -11,6 +11,7 @@ class TelegramSettings(BaseSettings):
     admin_ids: list[int]
     webhook_use: bool
     webhook_path: str
+    mini_app_api_key: SecretStr = SecretStr("")
 
     @field_validator("admin_ids")
     @classmethod
