@@ -8,4 +8,7 @@ __all__ = [
     "inline_language_kb",
     "reply_language_kb",
     "get_location_kb",
+    "get_webapp_inline_kb",
+    "get_webapp_reply_kb",
+    "MINI_APP_URL",
 ]
