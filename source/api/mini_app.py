@@ -36,28 +36,35 @@ class MiniAppDataResponse(BaseModel):
 
 
 # === Авторизация ===
+# source/api/mini_app.py
+from fastapi import Header, HTTPException, status
+
 async def verify_mini_app_request(
     x_api_key: str | None = Header(default=None),
     x_telegram_init_data: str | None = Header(default=None),
 ) -> dict:
-    """
-    Проверяет запрос от mini-app:
-    1. API Key (для разработки)
-    2. Telegram initData (для продакшена)
-    """
-    from source.config.config_reader import config
+    from source.config.config_reader import settings  # ← Импорт глобального settings
     
-    # 1. Проверка API Key (простой способ для начала)
-    if x_api_key and x_api_key == getattr(config, 'TG__MINI_APP_API_KEY', None):
+    # 1. Проверка API Key (если настроен)
+    config_key = settings.tg.mini_app_api_key.get_secret_value()
+    
+    if config_key and x_api_key == config_key:
         return {"auth_method": "api_key"}
     
-    # 2. Проверка Telegram initData (безопасный способ)
+    # 2. Если ключ не настроен — разрешаем только Telegram initData
+    if not config_key and not x_telegram_init_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="API key not configured. Use Telegram initData for auth."
+        )
+    
+    # 3. Проверка Telegram initData (безопасный способ)
     if x_telegram_init_data:
         try:
-            # Валидация через aiogram
-            bot_token = config.TG__BOT_TOKEN
+            bot_token = settings.tg.bot_token.get_secret_value()
+            from aiogram.utils.web_app import check_webapp_signature
+            
             if check_webapp_signature(bot_token, x_telegram_init_data):
-                # Парсим данные пользователя
                 from aiogram.utils.web_app import parse_webapp_init_data
                 user_data = parse_webapp_init_data(x_telegram_init_data)
                 return {
@@ -75,6 +82,7 @@ async def verify_mini_app_request(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Missing or invalid authentication"
     )
+
 
 
 # === Эндпоинты ===
