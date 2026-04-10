@@ -8,9 +8,6 @@ from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter
 from fastapi import FastAPI
 from fastapi import Request
-from fastapi.middleware.cors import CORSMiddleware
-
-from source.api.mini_app import router as mini_app_router
 
 from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -71,26 +68,3 @@ def create_app(bot: Bot, dp: Dispatcher, container: AsyncContainer) -> FastAPI:
 
     return app
     
-
-def create_webhook_server(bot: Bot, config: Config) -> FastAPI:
-    app = FastAPI(title="NewCRM API", version="1.0")
-    
-    # === CORS для GitHub Pages и других доменов ===
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[
-            "https://luhverchikv.github.io",  # GitHub Pages
-            "http://localhost:3000",           # локальная разработка
-            "https://pharm.at.by",             # будущий домен
-            "https://*.github.io",             # все GitHub!)
-        ],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    
-    # === Подключение роутеров ===
-    app.include_router(mini_app_router)  # ← Новый API для mini-app
-    # app.include_router(webhook_router)  # ← Существующий для Telegram
-    
-    return app
