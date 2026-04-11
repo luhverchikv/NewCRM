@@ -15,11 +15,15 @@ from source.config import settings
 from source.database import create_tables
 from source.utils import set_default_commands
 
+from source.scheduler import create_scheduler
+from source.scheduler import shutdown_scheduler
+
 try:
     from prometheus_client import make_asgi_app
 except ImportError:  # pragma: no cover - optional dependency
     make_asgi_app = None
 
+scheduler = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI, bot: Bot, dp: Dispatcher, container: AsyncContainer):
@@ -28,6 +32,7 @@ async def lifespan(app: FastAPI, bot: Bot, dp: Dispatcher, container: AsyncConta
         await create_tables(engine)
 
     await set_default_commands(bot)
+    scheduler = create_scheduler(bot)
 
     if settings.tg.webhook_use:
         webhook_url = f"{settings.webhook.url.rstrip('/')}{settings.tg.webhook_path}"
@@ -40,6 +45,9 @@ async def lifespan(app: FastAPI, bot: Bot, dp: Dispatcher, container: AsyncConta
     yield
     if settings.tg.webhook_use:
         await bot.delete_webhook()
+        
+    if scheduler is not None:
+        shutdown_scheduler(scheduler)
 
 
 def create_app(bot: Bot, dp: Dispatcher, container: AsyncContainer) -> FastAPI:
