@@ -4,13 +4,23 @@
 Каждая функция принимает экземпляр бота в качестве первого аргумента.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
+import zoneinfo
+
+
+
+
+    # ... rest of code
+
+
+
 
 from aiogram import Bot
 from loguru import logger
 
 from source.config import settings
 
+DEFAULT_TIMEZONE = "Europe/Minsk"
 
 async def send_daily_welcome_message(bot: Bot) -> None:
     """Отправляет приветственное сообщение администраторам.
@@ -21,8 +31,11 @@ async def send_daily_welcome_message(bot: Bot) -> None:
     Args:
         bot: Экземпляр Telegram-бота для отправки сообщений.
     """
+    tz = zoneinfo.ZoneInfo(DEFAULT_TIMEZONE)
+    now = datetime.now(tz)
+    today = now.strftime("%d.%m.%Y")
     try:
-        today = datetime.now().strftime("%d.%m.%Y")
+        
         welcome_text = (
             f"☀️ <b>Доброе утро!</b>\n\n"
             f"📅 Дата: {today}\n"
