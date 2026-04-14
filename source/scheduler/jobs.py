@@ -7,14 +7,6 @@
 from datetime import datetime, timezone
 import zoneinfo
 
-
-
-
-    # ... rest of code
-
-
-
-
 from aiogram import Bot
 from loguru import logger
 
