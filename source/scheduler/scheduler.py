@@ -40,7 +40,7 @@ def create_scheduler(bot: "Bot") -> AsyncIOScheduler:
     # ☀️ Ежедневное приветственное сообщение администраторам (09:00)
     scheduler.add_job(
         send_daily_welcome_message,
-        CronTrigger(hour=9, minute=0),
+        CronTrigger(hour=9, minute=0, timezone=timezone),
         args=[bot],
         id="daily_welcome_message",
         replace_existing=True,
