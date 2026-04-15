@@ -29,7 +29,7 @@
 *   `/fsm` - Demo finite state machine form
 
 ⠀
-## 🗂️ Template structure
+## 🗂️ Структура шаблона
 ⠀
 
 ```
@@ -232,7 +232,7 @@
 ```
 
 ⠀
-## 📋 About the content
+## 📋 Содержание:
 ⠀
 
 *   `📁 source/` - Main application source code.
@@ -274,7 +274,7 @@
 *   `📁 tests/` - Test suite.
 
 ⠀
-## ⚙️ Configuration
+## ⚙️ Конфигурация
 ⠀
 
 Before running the bot, you need to set up your environment variables. Copy the `.env.example` file to `.env` and fill in your credentials and settings:
@@ -317,7 +317,7 @@ cp .env.example .env
 
 ### 📦 Using UV
 ⠀
-1.  Clone the repository and navigate into the project directory:
+1.  Клонируйте репозиторий и перейдите в директорию проекта:
 
     ```shell
      git clone https://github.com/MrConsoleka/aiogram-bot-template.git
@@ -341,9 +341,6 @@ cp .env.example .env
     ```shell
     # For Linux or macOS:
     source .venv/bin/activate
-
-    # For Windows:
-    .venv\Scripts\activate
     ```
 
 5.  Install dependencies:
@@ -358,28 +355,28 @@ cp .env.example .env
     make run
     ```
 ⠀
-### 📦 Using Docker
+### 📦 Использование Docker
 ⠀
-1.  Clone the repository and navigate into the project directory:
+1.  Клонируйте репозиторий и перейдите в директорию проекта:
 
     ```shell
     git clone https://github.com/MrConsoleka/aiogram-bot-template.git
     cd aiogram-bot-template
     ```
 
-2.  Build the Docker Image:
+2.  Создайте образ Docker:
 
     ```shell
     make docker-build
     ```
 
-3.  Run the Project with Docker Compose:
+3.  Запустите проект с помощью Docker Compose:
 
     ```shell
     make docker-up
     ```
 
-4.  Verify Bot is Running (Optional):
+4.  Проверить, что бот работает (опционально):
 
     ```shell
     make docker-logs
@@ -389,7 +386,7 @@ cp .env.example .env
     make docker-logs SERVICE=bot
     ```
 
-5.  Stop the Project:
+5.  Остановить проект:
 
     ```shell
     make docker-down
@@ -399,7 +396,7 @@ cp .env.example .env
 ## 🗄️ Migrations
 ⠀
 
-Create and apply migrations with Alembic:
+Создайте и примените миграции с помощью Alembic:
 
 ```shell
 make migration MESSAGE="create users"
@@ -410,7 +407,7 @@ uv run alembic upgrade head
 ## 🧪 Testing
 ⠀
 
-Run tests locally:
+Запустить тесты локально:
 
 ```shell
 uv run pytest tests/
@@ -444,7 +441,7 @@ make dev-down
 - [x] .github/workflows
 
 ⠀
-## 🗃️ Stack of Technologies
+## 🗃️ Стек технологий
 ⠀
 
 *   [aiogram-3x](https://github.com/aiogram/aiogram) - Asynchronous framework for the Telegram Bot API.
@@ -466,6 +463,6 @@ make dev-down
 -   [aiogram_template](https://github.com/Lems0n/aiogram_template) - Inspired by Abdullah's project, many thanks to him <3
 
 ⠀
-## 👤 Author of Aiogram Template Bot
+## 👤 Автор Aiogram Template Bot
 ⠀
 **© Roman Alekseev**
