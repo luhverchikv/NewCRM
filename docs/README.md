@@ -1,16 +1,16 @@
-# Docs
+# Документы
 
-## Getting Started
-Quick path to install, run, and add your first handler.
+## Начало работы
+Быстрый путь для установки, запуска и добавления вашего первого обработчика.
 - Start here: [getting-started.md](getting-started.md)
 
-## Guides
-Short, copy-paste oriented how-tos.
+## Рекомендации
+Краткие инструкции, ориентированные на копирование и вставку.
 - Core: [configuration](guides/configuration.md), [handlers](guides/handlers.md), [services](guides/services.md)
-- Storage + shipping: [database](guides/database.md), [deployment](guides/deployment.md), [docker](guides/docker.md)
+- Storage + shipping: [database](guides/database.md), [deployment](guides/deployment.md), [docker](guides/docker.md), [systemd](guides/SYSTEMD.md)
 
-## Reference
-Concise lookups for architecture and structure.
+## Ссылка
+Краткий поиск архитектуры и структуры.
 - Core refs: [architecture](reference/architecture.md), [project-structure](reference/project-structure.md), [api](reference/api.md)
 
 ## Releases
