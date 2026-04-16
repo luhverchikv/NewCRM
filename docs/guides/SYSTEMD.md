@@ -65,7 +65,7 @@ WantedBy=multi-user.target
 | `User`             | Пользователь, от имени которого запускается бот | `vitali_lukhverchyk`              |
 | `WorkingDirectory` | Директория проекта                              | `/home/user/aiogram-bot-template` |
 | `EnvironmentFile`  | Путь к файлу с переменными окружения            | `.env`                            |
-| `ExecStart`        | Команда запуска                                 | `//home/vitali_lukhverchyk/.local/bin/uv run python source/__main__.py`         |
+| `ExecStart`        | Команда запуска                                 | `/home/vitali_lukhverchyk/.local/bin/uv run python source/__main__.py`         |
 | `Restart`          | Политика перезапуска                            | `always`, `on-failure`, `no`      |
 | `RestartSec`       | Задержка перед перезапуском (секунды)           | `10`                              |
 
