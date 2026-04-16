@@ -24,19 +24,3 @@ async def open_mini_app(
         text=text,
         reply_markup=get_webapp_inline_kb()
     )
-
-
-@webapp_router.message(Command("menu"))
-@aiogram_inject
-async def show_menu(
-    message: Message,
-    i18n: FromDishka[I18n],
-) -> None:
-    """Команда для отображения меню с Reply клавиатурой."""
-    user_id = message.from_user.id
-    text = await i18n(user_id, "menu_welcome")
-
-    await message.answer(
-        text=text,
-        reply_markup=get_webapp_reply_kb()
-    )
