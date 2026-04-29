@@ -34,6 +34,22 @@ class UserOrm(Base, TableNameMixin):
         comment="Язык ('ru', 'en' и т.д.)",
     )
 
+    name: Mapped[str] = mapped_column(
+        String,
+        nullable=False,
+        comment="Имя пользователя",
+    )
+    region: Mapped[str] = mapped_column(
+        SQLAlchemyEnum('Minsk', 'Grodno', 'Brest', name='region_enum'),
+        nullable=True,
+        comment="Регион пользователя",
+    )
+    direction: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True,
+        comment="Направление (например, 'cardiology')",
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
